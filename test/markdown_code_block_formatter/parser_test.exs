@@ -368,4 +368,391 @@ defmodule MarkdownCodeBlockFormatter.ParserTest do
              ]
     end
   end
+
+  describe "parse/1 with disable comments" do
+    test "disable 'comment' treats the next Elixir code block like other content" do
+      result =
+        """
+        ```elixir
+        %{foo: bar}
+        ```
+
+        How to define a function in Elixir:
+
+        [//]: # (elixir-formatter-disable-next-block)
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+
+        How to define a macro in Elixir:
+        ```elixir
+        defmodule MyModule do
+          defmacro my_macro(a, b), do: a + b
+        end
+        ```
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "```elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 0},
+                 lines: [
+                   "%{foo: bar}"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "```",
+                   "",
+                   "How to define a function in Elixir:",
+                   "",
+                   "[//]: # (elixir-formatter-disable-next-block)",
+                   "",
+                   "~~~elixir",
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end",
+                   "~~~",
+                   "",
+                   "How to define a macro in Elixir:",
+                   "```elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 0},
+                 lines: [
+                   "defmodule MyModule do",
+                   "  defmacro my_macro(a, b), do: a + b",
+                   "end"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "```",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "each Elixir code block needs its own comment" do
+      result =
+        """
+        ```elixir
+        %{foo: bar}
+        ```
+
+        How to define a function in Elixir:
+
+        [//]: # (elixir-formatter-disable-next-block)
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+
+        How to define a macro in Elixir:
+
+        [//]: # (elixir-formatter-disable-next-block)
+
+        ```elixir
+        defmodule MyModule do
+          defmacro my_macro(a, b), do: a + b
+        end
+        ```
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "```elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 0},
+                 lines: [
+                   "%{foo: bar}"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "```",
+                   "",
+                   "How to define a function in Elixir:",
+                   "",
+                   "[//]: # (elixir-formatter-disable-next-block)",
+                   "",
+                   "~~~elixir",
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end",
+                   "~~~",
+                   "",
+                   "How to define a macro in Elixir:",
+                   "",
+                   "[//]: # (elixir-formatter-disable-next-block)",
+                   "",
+                   "```elixir",
+                   "defmodule MyModule do",
+                   "  defmacro my_macro(a, b), do: a + b",
+                   "end",
+                   "```",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "'comment' reference name can be empty" do
+      result =
+        """
+        How to define a function in Elixir:
+
+        []: # (elixir-formatter-disable-next-block)
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to define a function in Elixir:",
+                   "",
+                   "[]: # (elixir-formatter-disable-next-block)",
+                   "",
+                   "~~~elixir",
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end",
+                   "~~~",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "'comment' reference name can be anything" do
+      result =
+        """
+        How to define a function in Elixir:
+
+        [foo-bar-baz]: # (elixir-formatter-disable-next-block)
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to define a function in Elixir:",
+                   "",
+                   "[foo-bar-baz]: # (elixir-formatter-disable-next-block)",
+                   "",
+                   "~~~elixir",
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end",
+                   "~~~",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "link title can be in single quotes" do
+      result =
+        """
+        How to define a function in Elixir:
+
+        [//]: # 'elixir-formatter-disable-next-block'
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to define a function in Elixir:",
+                   "",
+                   "[//]: # 'elixir-formatter-disable-next-block'",
+                   "",
+                   "~~~elixir",
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end",
+                   "~~~",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "link title can be in double quotes" do
+      result =
+        """
+        How to define a function in Elixir:
+
+        [//]: # "elixir-formatter-disable-next-block"
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to define a function in Elixir:",
+                   "",
+                   "[//]: # \"elixir-formatter-disable-next-block\"",
+                   "",
+                   "~~~elixir",
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end",
+                   "~~~",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "link href must be #" do
+      result =
+        """
+        How to define a function in Elixir:
+
+        [//]: https://exercism.org "elixir-formatter-disable-next-block"
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to define a function in Elixir:",
+                   "",
+                   "[//]: https://exercism.org \"elixir-formatter-disable-next-block\"",
+                   "",
+                   "~~~elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 0},
+                 lines: [
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "~~~",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "'comment' does not need to be followed by the block immediately" do
+      result =
+        """
+        []: # (elixir-formatter-disable-next-block)
+
+        How to define a function in Elixir:
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "[]: # (elixir-formatter-disable-next-block)",
+                   "",
+                   "How to define a function in Elixir:",
+                   "",
+                   "~~~elixir",
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end",
+                   "~~~",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "'comment' can wrapped in whitespace" do
+      # note: I'm not sure if that's valid Markdown syntax
+
+      result =
+        """
+        How to define a function in Elixir:
+
+        \t  []: # (elixir-formatter-disable-next-block)\t#{"  "}
+
+        ~~~elixir
+        defmodule MyModule do
+                 def my_function(a,b), do: a+b
+        end
+        ~~~
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to define a function in Elixir:",
+                   "",
+                   "\t  []: # (elixir-formatter-disable-next-block)\t  ",
+                   "",
+                   "~~~elixir",
+                   "defmodule MyModule do",
+                   "         def my_function(a,b), do: a+b",
+                   "end",
+                   "~~~",
+                   ""
+                 ]
+               }
+             ]
+    end
+  end
 end

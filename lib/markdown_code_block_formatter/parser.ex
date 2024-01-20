@@ -11,6 +11,7 @@ defmodule MarkdownCodeBlockFormatter.Parser do
       in_code_block: false,
       in_elixir_code_block: false,
       code_block_tag: nil,
+      ignore_next_elixir_code_block: false,
       chunks: []
     })
   end
@@ -33,7 +34,7 @@ defmodule MarkdownCodeBlockFormatter.Parser do
 
           true ->
             chunks =
-              if acc.in_elixir_code_block do
+              if acc.in_elixir_code_block && !acc.ignore_next_elixir_code_block do
                 [%OtherContent{lines: [line]} | acc.chunks]
               else
                 append_to_current_chunk(acc.chunks, line)
@@ -44,6 +45,7 @@ defmodule MarkdownCodeBlockFormatter.Parser do
               | in_code_block: false,
                 in_elixir_code_block: false,
                 code_block_tag: nil,
+                ignore_next_elixir_code_block: false,
                 chunks: chunks
             }
         end
@@ -51,33 +53,42 @@ defmodule MarkdownCodeBlockFormatter.Parser do
         case code_block_start(line) do
           nil ->
             chunks = append_to_current_or_new_chunk(acc.chunks, %OtherContent{}, line)
+
+            acc =
+              if disable_comment(line) do
+                %{acc | ignore_next_elixir_code_block: true}
+              else
+                acc
+              end
+
             %{acc | chunks: chunks}
 
-          {"elixir", opening_tag} ->
-            chunks = append_to_current_or_new_chunk(acc.chunks, %OtherContent{}, line)
+          {language, opening_tag} ->
+            if language == "elixir" && !acc.ignore_next_elixir_code_block do
+              chunks = append_to_current_or_new_chunk(acc.chunks, %OtherContent{}, line)
 
-            chunks = [
-              %ElixirCode{indentation: Indentation.detect_indentation(line), lines: []} | chunks
-            ]
+              chunks = [
+                %ElixirCode{indentation: Indentation.detect_indentation(line), lines: []} | chunks
+              ]
 
-            %{
-              acc
-              | in_code_block: true,
-                in_elixir_code_block: true,
-                code_block_tag: opening_tag,
-                chunks: chunks
-            }
+              %{
+                acc
+                | in_code_block: true,
+                  in_elixir_code_block: true,
+                  code_block_tag: opening_tag,
+                  chunks: chunks
+              }
+            else
+              chunks = append_to_current_or_new_chunk(acc.chunks, %OtherContent{}, line)
 
-          {_other_language, opening_tag} ->
-            chunks = append_to_current_or_new_chunk(acc.chunks, %OtherContent{}, line)
-
-            %{
-              acc
-              | in_code_block: true,
-                in_elixir_code_block: false,
-                code_block_tag: opening_tag,
-                chunks: chunks
-            }
+              %{
+                acc
+                | in_code_block: true,
+                  in_elixir_code_block: false,
+                  code_block_tag: opening_tag,
+                  chunks: chunks
+              }
+            end
         end
       end
 
@@ -100,6 +111,29 @@ defmodule MarkdownCodeBlockFormatter.Parser do
         nil
 
       [_, _indentation, _closing_tag, _language | _] ->
+        true
+    end
+  end
+
+  defp disable_comment(line) do
+    comment = "elixir-formatter-disable-next-block"
+
+    # 'comments' are link references to '#' and can have one of the three formats:
+    # ```
+    # [optional-name]: # (elixir-formatter-disable-next-block)
+    # [optional-name]: # "elixir-formatter-disable-next-block"
+    # [optional-name]: # 'elixir-formatter-disable-next-block'
+
+    case Regex.run(
+           Regex.compile!(
+             "^(\\s*|\\t*)\\[.*\\]: # ((\\(#{comment}\\))|(\"#{comment}\")|(\'#{comment}\'))(\\s*|\\t*)$"
+           ),
+           line
+         ) do
+      nil ->
+        nil
+
+      list when is_list(list) ->
         true
     end
   end

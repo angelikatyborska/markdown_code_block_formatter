@@ -203,5 +203,50 @@ defmodule MarkdownCodeBlockFormatter.FormatterTest do
       output = format(input, [])
       assert output == desired_output
     end
+
+    test "respects 'disable comments'" do
+      input =
+        """
+        # Hello, World!
+
+        * List item 1
+        * List item 2
+
+        [//]: # (elixir-formatter-disable-next-block)
+
+        ```elixir
+              def add(a, b), do:    a+b
+        ```
+
+        ## Goodbye, Mars!
+
+        ~~~~elixir
+        1+2+3+4
+        ~~~~
+        """
+
+      desired_output =
+        """
+        # Hello, World!
+
+        * List item 1
+        * List item 2
+
+        [//]: # (elixir-formatter-disable-next-block)
+
+        ```elixir
+              def add(a, b), do:    a+b
+        ```
+
+        ## Goodbye, Mars!
+
+        ~~~~elixir
+        1 + 2 + 3 + 4
+        ~~~~
+        """
+
+      output = format(input, [])
+      assert output == desired_output
+    end
   end
 end
