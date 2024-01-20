@@ -54,3 +54,32 @@ my_function([opt1: true, opt2: 60])
 ````
 
 Note that Markdown does not have a syntax for comments, and the above is just a [reference-style link syntax](https://www.markdownguide.org/basic-syntax/#reference-style-links).
+
+## Known limitations
+
+### Whitespace stripping on empty lines
+
+Imagine your Elixir code blocks are indented in your Markdown file. Like this:
+
+````markdown
+- This code block is part of the list item:
+  ```elixir
+  a = rem(x, 2)
+
+  a * 10
+  ```
+````
+
+On line nr 4, you could either have no characters, or have 2 spaces. This formatter will always strip all of your whitespaces from empty lines in Elixir code, forcing you into option 1.
+
+This is my preferred behavior, but it should be possible to extend the formatter to accept and option that lets you choose either of the two. Let me know if you need that by opening a GitHub issue. 
+
+### Indented (not fenced) code blocks
+
+TL;DR: This formatter doesn't work well with indented code blocks. Use fenced code blocks instead.
+
+Generally, this formatter will only format code blocks annotated as Elixir, and only fenced code blocks can specify their syntax. But that's not what this limitation is about.
+
+Parsing indented code blocks is not implemented at all, which means all content inside an indented code block will be further parsed as Markdown. If your indented code block contains a fenced Elixir code block as content, that Elixir code block will get formatted even though it shouldn't.
+
+I decided to ignore indented code blocks to simplify the parser implementation and save time.
