@@ -98,7 +98,7 @@ defmodule MarkdownCodeBlockFormatter.Parser do
       nil ->
         nil
 
-      [_, _indentation, closing_tag, _language | _] ->
+      [_, _indentation, _closing_tag, _language | _] ->
         true
     end
   end

@@ -114,10 +114,258 @@ defmodule MarkdownCodeBlockFormatter.ParserTest do
              ]
     end
 
-    # TODO: test code blocks "nested" in code blocks
-    # TODO: test more than one code block in file
-    # TODO: test complex example
-    # TODO: test non-fenced code blocks
-    # TODO: test inline code does not interfere
+    test "code block, no syntax specified, with an elixir code block as content" do
+      result =
+        """
+        How to show your Elixir code on the forum:
+        ````
+        ```elixir
+        %{foo: bar}
+        ```
+        ````
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to show your Elixir code on the forum:",
+                   "````",
+                   "```elixir",
+                   "%{foo: bar}",
+                   "```",
+                   "````",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "elixir code block, with an elixir code block as content" do
+      result =
+        """
+        Multiline strings in Elixir:
+        ````elixir
+        markdown =
+          \"""
+          ```elixir
+          %{foo: bar}
+          ```
+          \"""
+        ````
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "Multiline strings in Elixir:",
+                   "````elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 0},
+                 lines: [
+                   "markdown =",
+                   "  \"\"\"",
+                   "  ```elixir",
+                   "  %{foo: bar}",
+                   "  ```",
+                   "  \"\"\""
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "````",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "multiple code blocks" do
+      result =
+        """
+        How to show your Elixir code on the forum:
+        ````
+        ```elixir
+        %{foo: bar}
+        ```
+        ````
+
+        How to define a function in Elixir:
+        ~~~elixir
+        defmodule MyModule do
+          def my_function(a, b), do: a + b
+        end
+        ~~~
+
+        How to define a macro in Elixir:
+        ```elixir
+        defmodule MyModule do
+          defmacro my_macro(a, b), do: a + b
+        end
+        ```
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to show your Elixir code on the forum:",
+                   "````",
+                   "```elixir",
+                   "%{foo: bar}",
+                   "```",
+                   "````",
+                   "",
+                   "How to define a function in Elixir:",
+                   "~~~elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 0},
+                 lines: [
+                   "defmodule MyModule do",
+                   "  def my_function(a, b), do: a + b",
+                   "end"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "~~~",
+                   "",
+                   "How to define a macro in Elixir:",
+                   "```elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 0},
+                 lines: [
+                   "defmodule MyModule do",
+                   "  defmacro my_macro(a, b), do: a + b",
+                   "end"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "```",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "inline code" do
+      result =
+        """
+        Define a function with `def` or `defp` if it's private.
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "Define a function with `def` or `defp` if it's private.",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "indented code block" do
+      result =
+        """
+        - How to define a function in Elixir:
+          ~~~elixir
+          defmodule MyModule do
+            def my_function(a, b), do: a + b
+          end
+          ~~~
+
+        - How to define a macro in Elixir:
+          ```elixir
+          defmodule MyModule do
+            defmacro my_macro(a, b), do: a + b
+          end
+          ```
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "- How to define a function in Elixir:",
+                   "  ~~~elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 2},
+                 lines: [
+                   "  defmodule MyModule do",
+                   "    def my_function(a, b), do: a + b",
+                   "  end"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "  ~~~",
+                   "",
+                   "- How to define a macro in Elixir:",
+                   "  ```elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 2},
+                 lines: [
+                   "  defmodule MyModule do",
+                   "    defmacro my_macro(a, b), do: a + b",
+                   "  end"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "  ```",
+                   ""
+                 ]
+               }
+             ]
+    end
+
+    test "a caveat: non-fenced code blocks aren't handled correctly" do
+      # elixir code as content in a non-fenced code block (indented) should be treated as "other content"
+      # but it's not, it's treated as Elixir code
+      result =
+        """
+        How to show your Elixir code on the forum:
+
+            ```elixir
+            %{foo: bar}
+            ```
+        """
+        |> parse()
+
+      assert result == [
+               %OtherContent{
+                 lines: [
+                   "How to show your Elixir code on the forum:",
+                   "",
+                   "    ```elixir"
+                 ]
+               },
+               %ElixirCode{
+                 indentation: {:spaces, 4},
+                 lines: [
+                   "    %{foo: bar}"
+                 ]
+               },
+               %OtherContent{
+                 lines: [
+                   "    ```",
+                   ""
+                 ]
+               }
+             ]
+    end
   end
 end
