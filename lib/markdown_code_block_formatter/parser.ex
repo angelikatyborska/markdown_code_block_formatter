@@ -1,4 +1,6 @@
 defmodule MarkdownCodeBlockFormatter.Parser do
+  @moduledoc false
+
   alias MarkdownCodeBlockFormatter.ElixirCode
   alias MarkdownCodeBlockFormatter.OtherContent
   alias MarkdownCodeBlockFormatter.Indentation

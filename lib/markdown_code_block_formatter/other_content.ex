@@ -1,4 +1,6 @@
 defmodule MarkdownCodeBlockFormatter.OtherContent do
+  @moduledoc false
+
   defstruct [:lines]
 
   @type t :: %__MODULE__{

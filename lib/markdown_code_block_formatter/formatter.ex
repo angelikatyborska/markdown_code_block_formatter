@@ -1,7 +1,8 @@
 defmodule MarkdownCodeBlockFormatter.Formatter do
+  @moduledoc false
+
   alias MarkdownCodeBlockFormatter.{Parser, Indentation, OtherContent, ElixirCode}
 
-  # TODO: better type for opts
   @spec format(String.t(), keyword()) :: String.t()
   def format(content, opts) do
     Parser.parse(content)

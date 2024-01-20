@@ -1,4 +1,6 @@
 defmodule MarkdownCodeBlockFormatter.Indentation do
+  @moduledoc false
+
   @type t :: {:tabs | :spaces, integer}
 
   @spec detect_indentation(String.t()) :: t()
