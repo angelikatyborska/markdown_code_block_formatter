@@ -42,21 +42,25 @@ defmodule MarkdownCodeBlockFormatter.IndentationTest do
 
   describe "indent/2" do
     test "no indentation" do
-      assert indent("", {:spaces, 0}) == ""
       assert indent("- foo", {:spaces, 0}) == "- foo"
       assert indent("   ### Bar", {:spaces, 0}) == "   ### Bar"
     end
 
     test "tabs" do
-      assert indent("", {:tabs, 1}) == "\t"
       assert indent("- foo", {:tabs, 2}) == "\t\t- foo"
       assert indent("\t\t\tBar", {:tabs, 10}) == "\t\t\t\t\t\t\t\t\t\t\t\t\tBar"
     end
 
     test "spaces" do
-      assert indent("", {:spaces, 1}) == " "
       assert indent("def foo, do: 3", {:spaces, 2}) == "  def foo, do: 3"
       assert indent("   40_000", {:spaces, 7}) == "          40_000"
+    end
+
+    test "does not indent empty lines" do
+      assert indent("", {:spaces, 1}) == ""
+      assert indent("", {:tabs, 1}) == ""
+      assert indent("  ", {:spaces, 1}) == "   "
+      assert indent("  \t\t", {:tabs, 1}) == "\t  \t\t"
     end
   end
 end

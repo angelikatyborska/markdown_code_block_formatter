@@ -160,5 +160,48 @@ defmodule MarkdownCodeBlockFormatter.FormatterTest do
       output = format(input, opts)
       assert output == desired_output
     end
+
+    test "empty lines with whitespace only should keep their whitespace, but not in Elixir" do
+      input =
+        """
+        # Hello, World!
+
+        #{"\t\t\t"}
+        #{"    "}
+        ```elixir
+        def add(a, b) do
+          dbg(a)
+
+          dbg(b)
+        #{"\t"}
+          dbg(a + b)
+        #{"  "}
+          a + b
+        end
+        ```
+        """
+
+      desired_output =
+        """
+        # Hello, World!
+
+        #{"\t\t\t"}
+        #{"    "}
+        ```elixir
+        def add(a, b) do
+          dbg(a)
+
+          dbg(b)
+
+          dbg(a + b)
+
+          a + b
+        end
+        ```
+        """
+
+      output = format(input, [])
+      assert output == desired_output
+    end
   end
 end

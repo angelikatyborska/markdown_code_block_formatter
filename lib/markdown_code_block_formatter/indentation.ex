@@ -21,6 +21,8 @@ defmodule MarkdownCodeBlockFormatter.Indentation do
     line
   end
 
+  def indent("", _), do: ""
+
   def indent(line, indentation) do
     indentation_string =
       case indentation do
