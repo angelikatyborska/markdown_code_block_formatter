@@ -83,6 +83,9 @@ jobs:
       - name: Run tests
         run: mix test
 
+      - name: Run smoke tests
+        run: elixir ./bin/smoke_test.exs
+
       - name: Run Dialyzer
         run: mix dialyzer
         if: ${{ matrix.current_version }}
