@@ -3,6 +3,7 @@ defmodule MarkdownCodeBlockFormatter.Parser do
   alias MarkdownCodeBlockFormatter.OtherContent
   alias MarkdownCodeBlockFormatter.Indentation
 
+  @spec parse(String.t()) :: [ElixirCode.t() | OtherContent.t()]
   def parse(content) do
     lines = String.split(content, "\n")
 
