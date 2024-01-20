@@ -5,11 +5,13 @@ defmodule MarkdownCodeBlockFormatter do
 
   @behaviour Mix.Tasks.Format
 
+  alias MarkdownCodeBlockFormatter.Formatter
+
   def features(_opts) do
     [sigils: [:M], extensions: [".md", ".markdown"]]
   end
 
-  def format(contents, _opts) do
-    contents
+  def format(contents, opts) do
+    Formatter.format(contents, opts)
   end
 end
