@@ -85,6 +85,8 @@ jobs:
 
       - name: Run Dialyzer
         run: mix dialyzer
+        if: ${{ matrix.current_version }}
 
       - name: Run format check
         run: mix format --check-formatted
+        if: ${{ matrix.current_version }}
