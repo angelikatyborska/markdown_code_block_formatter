@@ -35,6 +35,8 @@ Then, extend your `.formatter.exs` config file by adding the plugin and inputs m
 ]
 ```
 
+Elixir 1.13 or up is required because lower versions do not support formatter plugins.
+
 ## Usage
 
 Run `mix format`.
