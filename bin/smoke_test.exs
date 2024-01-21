@@ -37,7 +37,7 @@ Enum.each(projects, fn project ->
 
   IO.puts("checking smoke_test_data/#{project}")
 
-  if String.starts_with?(elxir_version, "1.13") do
+  if major_version == 1 && minor_version <= 13 do
     {_, 0} = System.cmd("mix", ["compile"], cd: project_path)
   end
 
