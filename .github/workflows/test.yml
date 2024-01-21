@@ -93,3 +93,17 @@ jobs:
       - name: Run format check
         run: mix format --check-formatted
         if: ${{ matrix.current_version }}
+
+  all_tests_passing:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: All tests passing on all versions
+    needs: [test]
+    steps:
+      - run: |
+          result="${{ needs.test.result }}"
+          if [[ $result == "success" || $result == "skipped" ]]; then
+            exit 0
+          else
+            exit 1
+          fi
