@@ -9,9 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-20.04
-    continue-on-error: ${{ !matrix.current_version }}
+    continue-on-error: false
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - elixir: '1.12.0'
