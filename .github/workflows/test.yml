@@ -97,10 +97,10 @@ jobs:
     name: All tests passing on all versions
     needs: [test]
     steps:
-      - run: |
-          result="${{ needs.test.result }}"
-          if [[ $result == "success" || $result == "skipped" ]]; then
-            exit 0
-          else
-            exit 1
-          fi
+      - run: exit 1
+        # see https://stackoverflow.com/a/67532120/4907315
+        if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+          }}
