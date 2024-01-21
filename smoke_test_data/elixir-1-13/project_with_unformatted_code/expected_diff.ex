@@ -1,10 +1,10 @@
 defmodule ExpectedDiff do
   def diff do
     """
-    diff --git a/smoke_test_data/project_with_unformatted_code/README.md b/smoke_test_data/project_with_unformatted_code/README.md
+    diff --git a/smoke_test_data/elixir-1-13/project_with_unformatted_code/README.md b/smoke_test_data/elixir-1-13/project_with_unformatted_code/README.md
     index d066e9b..0ccfa0b 100644
-    --- a/smoke_test_data/project_with_unformatted_code/README.md
-    +++ b/smoke_test_data/project_with_unformatted_code/README.md
+    --- a/smoke_test_data/elixir-1-13/project_with_unformatted_code/README.md
+    +++ b/smoke_test_data/elixir-1-13/project_with_unformatted_code/README.md
     @@ -9,9 +9,9 @@ by adding `project_with_unformatted_code` to your list of dependencies in `mix.e
     #{" "}
      ```elixir
@@ -18,10 +18,10 @@ defmodule ExpectedDiff do
      end
      ```
     #{" "}
-    diff --git a/smoke_test_data/project_with_unformatted_code/docs/hello.md b/smoke_test_data/project_with_unformatted_code/docs/hello.md
+    diff --git a/smoke_test_data/elixir-1-13/project_with_unformatted_code/docs/hello.md b/smoke_test_data/elixir-1-13/project_with_unformatted_code/docs/hello.md
     index 114bb32..8d4ffe5 100644
-    --- a/smoke_test_data/project_with_unformatted_code/docs/hello.md
-    +++ b/smoke_test_data/project_with_unformatted_code/docs/hello.md
+    --- a/smoke_test_data/elixir-1-13/project_with_unformatted_code/docs/hello.md
+    +++ b/smoke_test_data/elixir-1-13/project_with_unformatted_code/docs/hello.md
     @@ -1,7 +1,7 @@
      # Hello!
     #{" "}
