@@ -13,7 +13,11 @@ end
 
 {elixir_version, _} = System.cmd("elixir", ["--version"])
 
-[_, elxir_version, _] = Regex.run(~r/Elixir ((\d|\.)*) \(compiled with/, elixir_version)
+[_, major_version, minor_version, _patch_version] =
+  Regex.run(~r/Elixir (\d+)\.(\d+)\.(\d+) \(compiled with/, elixir_version)
+
+major_version = String.to_integer(major_version)
+minor_version = String.to_integer(minor_version)
 
 projects =
   [
@@ -24,7 +28,7 @@ projects =
 Enum.each(projects, fn project ->
   project_path =
     cond do
-      String.starts_with?(elxir_version, "1.13") ->
+      major_version == 1 && minor_version <= 13 ->
         "smoke_test_data/elixir-1-13/#{project}"
 
       true ->
@@ -33,7 +37,7 @@ Enum.each(projects, fn project ->
 
   IO.puts("checking smoke_test_data/#{project}")
 
-  if String.starts_with?(elxir_version, "1.13") do
+  if major_version == 1 && minor_version <= 13 do
     {_, 0} = System.cmd("mix", ["compile"], cd: project_path)
   end
 

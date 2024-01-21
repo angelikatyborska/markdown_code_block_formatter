@@ -9,17 +9,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-20.04
-    continue-on-error: ${{ !matrix.current_version }}
+    continue-on-error: false
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
-          - elixir: '1.11.0'
-            otp: '23.2'
-            current_version: false
-          - elixir: '1.12.0'
-            otp: '24.0'
-            current_version: false
           - elixir: '1.13.0'
             otp: '24.1'
             current_version: false
@@ -93,3 +87,17 @@ jobs:
       - name: Run format check
         run: mix format --check-formatted
         if: ${{ matrix.current_version }}
+
+  all_tests_passing:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: All tests passing on all versions
+    needs: [test]
+    steps:
+      - run: exit 1
+        # see https://stackoverflow.com/a/67532120/4907315
+        if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+          }}
