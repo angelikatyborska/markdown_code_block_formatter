@@ -40,26 +40,6 @@ defmodule ExpectedDiff do
      ```
     #{" "}
      ```markdown
-    diff --git a/smoke_test_data/project_with_unformatted_code/lib/project_with_unformatted_code.ex b/smoke_test_data/project_with_unformatted_code/lib/project_with_unformatted_code.ex
-    index 7af383c..c94df7f 100644
-    --- a/smoke_test_data/project_with_unformatted_code/lib/project_with_unformatted_code.ex
-    +++ b/smoke_test_data/project_with_unformatted_code/lib/project_with_unformatted_code.ex
-    @@ -17,13 +17,14 @@ defmodule ProjectWithUnformattedCode do
-         # Hello, World!
-    #{" "}
-         ```elixir
-    -    def add(a,b), do: a+b
-    +    def add(a, b), do: a + b
-         ```
-    #{" "}
-         ```js
-         1+2+3
-         ```
-         \"""
-    +
-         :world
-       end
-     end
     """
   end
 end

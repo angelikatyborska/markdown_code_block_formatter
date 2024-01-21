@@ -33,6 +33,10 @@ Enum.each(projects, fn project ->
 
   IO.puts("checking smoke_test_data/#{project}")
 
+  if String.starts_with?(elxir_version, "1.13") do
+    {_, 0} = System.cmd("mix", ["compile"], cd: project_path)
+  end
+
   {_, 0} = System.cmd("mix", ["format"], cd: project_path)
   {diff, 0} = System.cmd("git", ["diff"], cd: project_path)
 
