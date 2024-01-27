@@ -28,7 +28,7 @@ Then, extend your `.formatter.exs` config file by adding the plugin and inputs m
 [
   plugins: [MarkdownCodeBlockFormatter],
   inputs: [
-    # modify the line below to match locations of your Markdown files
+    # modify the line below to match the locations of your Markdown files
     "{docs,help}/*.{md,markdown}",
     # other files ...
   ]
@@ -74,7 +74,7 @@ Imagine your Elixir code blocks are indented in your Markdown file. Like this:
 
 On line nr 4, you could either have no characters, or have 2 spaces. This formatter will always strip all of your whitespaces from empty lines in Elixir code, forcing you into option 1.
 
-This is my preferred behavior, but it should be possible to extend the formatter to accept and option that lets you choose either of the two. Let me know if you need that by opening a GitHub issue. 
+This is my preferred behavior, but it should be possible to extend the formatter to accept an option that lets you choose either of the two. Let me know if you need that by opening a GitHub issue. 
 
 ### Indented (not fenced) code blocks
 
