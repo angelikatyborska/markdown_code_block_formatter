@@ -1,6 +1,6 @@
 # Markdown Code Block Formatter
 
-![GitHub Workflow status](https://github.com/github/docs/actions/workflows/test.yml/badge.svg)
+![GitHub Workflow status](https://github.com/angelikatyborska/markdown_code_block_formatter/actions/workflows/test.yml/badge.svg)
 ![version on Hex.pm](https://img.shields.io/hexpm/v/markdown_code_block_formatter)
 ![number of downloads on Hex.pm](https://img.shields.io/hexpm/dt/markdown_code_block_formatter)
 ![license on Hex.pm](https://img.shields.io/hexpm/l/markdown_code_block_formatter)
