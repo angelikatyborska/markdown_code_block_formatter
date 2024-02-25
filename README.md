@@ -9,7 +9,7 @@ An Elixir formatter for Elixir code blocks in Markdown files and sigils.
 
 It will **not** format any other part of your Markdown files.
 
-![Running mix format formats your Elixir code in Markdown](https://raw.github.com/angelikatyborska/vnu-elixir/main/assets/mix-format.gif)
+![Running mix format formats your Elixir code in Markdown](https://raw.github.com/angelikatyborska/markdown_code_block_formatter/main/assets/mix-format.gif)
 
 ## Installation
 
