@@ -1,6 +1,6 @@
-defmodule ProjectWithUnformattedCode do
+defmodule ProjectWithFormattedCode do
   @moduledoc """
-  Documentation for `ProjectWithUnformattedCode`.
+  Documentation for `ProjectWithFormattedCode`.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule ProjectWithUnformattedCode do
 
   ## Examples
 
-      iex> ProjectWithUnformattedCode.hello()
+      iex> ProjectWithFormattedCode.hello()
       :world
 
   """
